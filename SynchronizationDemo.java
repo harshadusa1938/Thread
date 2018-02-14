@@ -12,6 +12,14 @@ class Account{
 	}
 	public synchronized void debit(int amt) {
 		System.out.println("A/C No="+accNo+" Deposit Amount="+amt);
+		if(balance<amt) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		balance -=amt;
 	}
 	public synchronized void credit(int amt) {
@@ -48,10 +56,12 @@ class DebitThread extends Thread{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			 account.debit(amt);
+			 System.out.println("A/C No="+account.getAccNo()+" Your Balance is "+account.getBalance());
 		 }
+		 
 	  }	
-	  account.debit(amt);
-	  System.out.println("A/C No="+account.getAccNo()+" Your Balance is "+account.getBalance());
+	  
 	}
 }
 class CreditThread extends Thread{
@@ -80,7 +90,7 @@ public class SynchronizationDemo {
 	//	Account ac2 = new Account(45623,5000);
 		
 		DebitThread d = new DebitThread(ac1,3000);
-		CreditThread c = new CreditThread(ac1,5000);
+		CreditThread c = new CreditThread(ac1,1000);
 		
 		//DebitThread d2 = new DebitThread(ac2,1000);
 		//CreditThread c2 = new CreditThread(ac2,5000);
